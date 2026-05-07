@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ridemate.knowledge.mapper.DocumentTableMapper">
+    
+    <resultMap id="DocumentTableResultMap" type="com.ridemate.knowledge.entity.DocumentTable">
+        <id property="id" column="id" />
+        <result property="documentId" column="document_id" />
+        <result property="tableData" column="table_data" typeHandler="org.apache.ibatis.type.JsonTypeHandler" />
+        <result property="description" column="description" />
+        <result property="pageNumber" column="page_number" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+    
+    <insert id="insert" parameterType="com.ridemate.knowledge.entity.DocumentTable">
+        INSERT INTO document_table (document_id, table_data, description, page_number)
+        VALUES (#{documentId}, #{tableData}, #{description}, #{pageNumber})
+    </insert>
+    
+    <select id="selectByDocumentId" parameterType="java.lang.Long" resultMap="DocumentTableResultMap">
+        SELECT * FROM document_table WHERE document_id = #{documentId} ORDER BY page_number
+    </select>
+    
+    <delete id="deleteByDocumentId" parameterType="java.lang.Long">
+        DELETE FROM document_table WHERE document_id = #{documentId}
+    </delete>
+</mapper>

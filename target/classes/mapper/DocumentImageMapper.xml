@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ridemate.knowledge.mapper.DocumentImageMapper">
+    
+    <resultMap id="DocumentImageResultMap" type="com.ridemate.knowledge.entity.DocumentImage">
+        <id property="id" column="id" />
+        <result property="documentId" column="document_id" />
+        <result property="imagePath" column="image_path" />
+        <result property="description" column="description" />
+        <result property="pageNumber" column="page_number" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+    
+    <insert id="insert" parameterType="com.ridemate.knowledge.entity.DocumentImage">
+        INSERT INTO document_image (document_id, image_path, description, page_number)
+        VALUES (#{documentId}, #{imagePath}, #{description}, #{pageNumber})
+    </insert>
+    
+    <select id="selectByDocumentId" parameterType="java.lang.Long" resultMap="DocumentImageResultMap">
+        SELECT * FROM document_image WHERE document_id = #{documentId} ORDER BY page_number
+    </select>
+    
+    <delete id="deleteByDocumentId" parameterType="java.lang.Long">
+        DELETE FROM document_image WHERE document_id = #{documentId}
+    </delete>
+</mapper>
