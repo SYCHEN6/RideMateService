@@ -6,7 +6,7 @@
     <resultMap id="DocumentTableResultMap" type="com.ridemate.knowledge.entity.DocumentTable">
         <id property="id" column="id" />
         <result property="documentId" column="document_id" />
-        <result property="tableData" column="table_data" typeHandler="org.apache.ibatis.type.JsonTypeHandler" />
+        <result property="tableData" column="table_data" />
         <result property="description" column="description" />
         <result property="pageNumber" column="page_number" />
         <result property="createTime" column="create_time" />

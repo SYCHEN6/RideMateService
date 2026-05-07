@@ -139,10 +139,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
         logger.info("保存文档图片: 文档ID={}, 图片数量={}", documentId, parsedDocument.getImages().size());
         
-        for (ParsedDocument.ImageInfo imageInfo : parsedDocument.getImages()) {
+        for (ParsedDocument.DocumentImage imageInfo : parsedDocument.getImages()) {
             DocumentImage documentImage = new DocumentImage();
             documentImage.setDocumentId(documentId);
-            documentImage.setImagePath(imageInfo.getPath());
+            documentImage.setImagePath(imageInfo.getImagePath());
             documentImage.setDescription(imageInfo.getDescription());
             documentImage.setPageNumber(imageInfo.getPageNumber());
             documentImage.setCreateTime(LocalDateTime.now());
@@ -163,10 +163,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
         logger.info("保存文档表格: 文档ID={}, 表格数量={}", documentId, parsedDocument.getTables().size());
         
-        for (ParsedDocument.TableInfo tableInfo : parsedDocument.getTables()) {
+        for (ParsedDocument.DocumentTable tableInfo : parsedDocument.getTables()) {
             DocumentTable documentTable = new DocumentTable();
             documentTable.setDocumentId(documentId);
-            documentTable.setTableData(tableInfo.getData());
             documentTable.setDescription(tableInfo.getDescription());
             documentTable.setPageNumber(tableInfo.getPageNumber());
             documentTable.setCreateTime(LocalDateTime.now());

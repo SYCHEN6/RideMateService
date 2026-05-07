@@ -3,7 +3,6 @@ package com.ridemate.knowledge.entity;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
  * 知识库文档实体类
@@ -16,7 +15,7 @@ public class KnowledgeDocument {
     private String category;
     private String source;
     private String fileType;
-    private Map<String, Object> metadata;
+    private String metadata;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
