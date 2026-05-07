@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ridemate.route.mapper.RideRouteMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="RideRouteMap" type="com.ridemate.route.entity.RideRoute">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="description" property="description" />
+        <result column="start_point" property="startPoint" />
+        <result column="end_point" property="endPoint" />
+        <result column="distance" property="distance" />
+        <result column="duration" property="duration" />
+        <result column="difficulty" property="difficulty" />
+        <result column="elevation_gain" property="elevationGain" />
+        <result column="creator_id" property="creatorId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+    
+    <!-- 插入路线 -->
+    <insert id="insert" parameterType="com.ridemate.route.entity.RideRoute">
+        INSERT INTO route (
+            name, description, start_point, end_point, distance, duration, difficulty, 
+            elevation_gain, creator_id, create_time, update_time
+        ) VALUES (
+            #{name}, #{description}, #{startPoint}, #{endPoint}, #{distance}, #{duration}, #{difficulty}, 
+            #{elevationGain}, #{creatorId}, #{createTime}, #{updateTime}
+        )
+    </insert>
+    
+    <!-- 根据ID查询路线 -->
+    <select id="selectById" parameterType="Long" resultMap="RideRouteMap">
+        SELECT * FROM route WHERE id = #{id}
+    </select>
+    
+    <!-- 查询所有路线 -->
+    <select id="selectAll" resultMap="RideRouteMap">
+        SELECT * FROM route
+    </select>
+    
+    <!-- 根据创建者ID查询路线 -->
+    <select id="selectByCreatorId" parameterType="Long" resultMap="RideRouteMap">
+        SELECT * FROM route WHERE creator_id = #{creatorId}
+    </select>
+    
+    <!-- 更新路线 -->
+    <update id="update" parameterType="com.ridemate.route.entity.RideRoute">
+        UPDATE route SET
+            name = #{name},
+            description = #{description},
+            start_point = #{startPoint},
+            end_point = #{endPoint},
+            distance = #{distance},
+            duration = #{duration},
+            difficulty = #{difficulty},
+            elevation_gain = #{elevationGain},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 删除路线 -->
+    <delete id="deleteById" parameterType="Long">
+        DELETE FROM route WHERE id = #{id}
+    </delete>
+</mapper>
