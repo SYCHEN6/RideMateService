@@ -26,17 +26,22 @@ visited_urls = set()
 
 # 提取网页内容的函数
 def extract_content(soup, url):
+    print(f"  开始提取内容: {url}")
+    
     # 提取标题
     title = soup.find('h1')
     title_text = title.text.strip() if title else "Untitled"
+    print(f"  标题: {title_text}")
     
     # 提取正文内容
     # 根据不同网站的结构调整选择器
     content_div = soup.find('div', class_='article-body') or soup.find('div', class_='content') or soup.find('main')
+    print(f"  找到内容div: {content_div is not None}")
     
     if not content_div:
         # 如果找不到正文div，尝试找到所有的p标签
         paragraphs = soup.find_all('p')
+        print(f"  找到{p}个段落标签")
         content = "\n".join([p.text.strip() for p in paragraphs])
     else:
         # 清理内容，移除脚本、样式和广告
@@ -45,11 +50,13 @@ def extract_content(soup, url):
         
         # 提取所有段落
         paragraphs = content_div.find_all('p')
+        print(f"  找到{p}个段落标签")
         content = "\n".join([p.text.strip() for p in paragraphs])
     
     # 清理内容
     content = re.sub(r'\s+', ' ', content)
     content = content.strip()
+    print(f"  提取内容长度: {len(content)} 字符")
     
     return {
         "title": title_text,
