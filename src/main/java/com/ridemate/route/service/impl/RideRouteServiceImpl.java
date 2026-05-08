@@ -11,7 +11,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,17 +29,29 @@ public class RideRouteServiceImpl implements RideRouteService {
 
     @Override
     public RideRouteResponse createRoute(RideRouteRequest request, Long creatorId) {
-        logger.info("创建路线: {}, 创建者ID: {}", request.getName(), creatorId);
-        RideRoute rideRoute = new RideRoute();
-        BeanUtils.copyProperties(request, rideRoute);
-        rideRoute.setCreatorId(creatorId);
-        rideRoute.setCreateTime(LocalDateTime.now());
-        rideRoute.setUpdateTime(LocalDateTime.now());
+        logger.info("开始创建路线");
+        logger.info("完整请求参数: {}", request);
+        logger.info("创建者ID: {}", creatorId);
+        try {
+            RideRoute rideRoute = new RideRoute();
+            logger.info("创建RideRoute实体");
+            BeanUtils.copyProperties(request, rideRoute);
+            logger.info("复制属性后: {}", rideRoute);
+            rideRoute.setCreatorId(creatorId);
+            rideRoute.setCreateTime(new Date());
+            rideRoute.setUpdateTime(new Date());
+            logger.info("设置创建者和时间后: {}", rideRoute);
 
-        rideRouteMapper.insert(rideRoute);
+            rideRouteMapper.insert(rideRoute);
+            logger.info("路线插入数据库成功，ID: {}", rideRoute.getId());
 
-        logger.info("路线创建成功: ID={}, 名称={}", rideRoute.getId(), rideRoute.getName());
-        return convertToResponse(rideRoute);
+            RideRouteResponse response = convertToResponse(rideRoute);
+            logger.info("转换为响应对象: {}", response);
+            return response;
+        } catch (Exception e) {
+            logger.error("创建路线失败: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
@@ -57,11 +70,23 @@ public class RideRouteServiceImpl implements RideRouteService {
     @Override
     public List<RideRouteResponse> getAllRoutes() {
         logger.info("查询所有路线");
-        List<RideRoute> rideRoutes = rideRouteMapper.selectAll();
-        logger.info("查询到{}条路线", rideRoutes.size());
-        return rideRoutes.stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
+        try {
+            // 添加更详细的日志记录，找出问题所在
+            logger.info("调用rideRouteMapper.selectAll()方法");
+            List<RideRoute> rideRoutes = rideRouteMapper.selectAll();
+            logger.info("rideRouteMapper.selectAll()方法返回结果: {}", rideRoutes);
+            if (rideRoutes == null) {
+                logger.info("rideRoutes为null，返回空列表");
+                return Collections.emptyList();
+            }
+            logger.info("rideRoutes不为null，转换为响应DTO列表");
+            return rideRoutes.stream()
+                    .map(this::convertToResponse)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.error("查询所有路线失败: {}", e.getMessage(), e);
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -84,7 +109,7 @@ public class RideRouteServiceImpl implements RideRouteService {
         }
 
         BeanUtils.copyProperties(request, rideRoute);
-        rideRoute.setUpdateTime(LocalDateTime.now());
+        rideRoute.setUpdateTime(new Date());
 
         rideRouteMapper.update(rideRoute);
 

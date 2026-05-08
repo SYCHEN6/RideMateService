@@ -2,7 +2,7 @@ package com.ridemate.route.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 骑行路线响应DTO
@@ -19,6 +19,6 @@ public class RideRouteResponse {
     private String difficulty;
     private Integer elevationGain;
     private Long creatorId;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private Date createTime;
+    private Date updateTime;
 }

@@ -1,6 +1,6 @@
 # 服务器配置
 server:
-  port: 8080
+  port: 13579
   servlet:
     context-path: /api
 
@@ -11,7 +11,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ridemate?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
     username: root
-    password: password
+    password: Changeme_456
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       maximum-pool-size: 10
@@ -58,6 +58,10 @@ mybatis:
 # 日志配置
 logging:
   level:
-    com.ridemate: debug
-    org.mybatis: debug
-    org.springframework: info
+    com.ridemate: trace
+    org.mybatis: trace
+    org.springframework: trace
+    com.zaxxer.hikari: trace
+    java.sql: trace
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"

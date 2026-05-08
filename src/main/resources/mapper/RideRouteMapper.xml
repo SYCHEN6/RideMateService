@@ -22,7 +22,7 @@
     </resultMap>
     
     <!-- 插入路线 -->
-    <insert id="insert" parameterType="com.ridemate.route.entity.RideRoute">
+    <insert id="insert" parameterType="com.ridemate.route.entity.RideRoute" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO route (
             name, description, start_point, end_point, distance, duration, difficulty, 
             elevation_gain, creator_id, create_time, update_time
@@ -63,7 +63,7 @@
     </update>
     
     <!-- 删除路线 -->
-    <delete id="deleteById" parameterType="Long">
+    <delete id="delete" parameterType="Long">
         DELETE FROM route WHERE id = #{id}
     </delete>
 </mapper>

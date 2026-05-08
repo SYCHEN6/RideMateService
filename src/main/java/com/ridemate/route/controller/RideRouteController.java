@@ -8,13 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 骑行路线控制器
  */
 @RestController
-@RequestMapping("/api/routes")
+@RequestMapping("/routes")
 public class RideRouteController {
 
     @Autowired
@@ -26,9 +28,22 @@ public class RideRouteController {
      * @return 路线响应
      */
     @PostMapping
-    public ResponseEntity<RideRouteResponse> createRoute(@RequestBody RideRouteRequest request, @RequestHeader(value = "X-User-Id", defaultValue = "1") Long creatorId) {
-        RideRouteResponse route = rideRouteService.createRoute(request, creatorId);
-        return new ResponseEntity<>(route, HttpStatus.CREATED);
+    public ResponseEntity<RideRouteResponse> createRoute(@RequestBody(required = false) RideRouteRequest request, @RequestHeader(value = "X-User-Id", defaultValue = "1") Long creatorId) {
+        try {
+            if (request == null) {
+                System.out.println("请求体为null");
+                return ResponseEntity.badRequest().build();
+            }
+            System.out.println("收到创建路线请求: " + request);
+            System.out.println("创建者ID: " + creatorId);
+            RideRouteResponse route = rideRouteService.createRoute(request, creatorId);
+            System.out.println("路线创建成功: " + route);
+            return new ResponseEntity<>(route, HttpStatus.CREATED);
+        } catch (Exception e) {
+            System.out.println("创建路线失败: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -52,8 +67,13 @@ public class RideRouteController {
      */
     @GetMapping
     public ResponseEntity<List<RideRouteResponse>> getAllRoutes() {
-        List<RideRouteResponse> routes = rideRouteService.getAllRoutes();
-        return ResponseEntity.ok(routes);
+        try {
+            List<RideRouteResponse> routes = rideRouteService.getAllRoutes();
+            return ResponseEntity.ok(routes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
