@@ -1,5 +1,7 @@
 package com.ridemate.knowledge.controller;
 
+import com.ridemate.knowledge.dto.ChatRequest;
+import com.ridemate.knowledge.dto.ChatResponse;
 import com.ridemate.knowledge.dto.KnowledgeDocumentResponse;
 import com.ridemate.knowledge.dto.UploadDocumentRequest;
 import com.ridemate.knowledge.service.KnowledgeService;
@@ -91,5 +93,16 @@ public class KnowledgeController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /**
+     * 智能问答
+     * @param request 聊天请求
+     * @return 聊天响应
+     */
+    @PostMapping("/chat")
+    public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
+        ChatResponse response = knowledgeService.chat(request);
+        return ResponseEntity.ok(response);
     }
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ridemate.knowledge.mapper.DocumentVectorMapper">
+    <!-- 插入文档向量 -->
+    <insert id="insert" parameterType="com.ridemate.knowledge.entity.DocumentVector">
+        INSERT INTO document_vector (
+            document_id, content, vector, create_time, update_time
+        ) VALUES (
+            #{documentId}, #{content}, #{vector}, #{createTime}, #{updateTime}
+        )
+    </insert>
+
+    <!-- 根据文档ID获取向量 -->
+    <select id="selectByDocumentId" resultType="com.ridemate.knowledge.entity.DocumentVector">
+        SELECT id, document_id, content, vector, create_time, update_time
+        FROM document_vector
+        WHERE document_id = #{documentId}
+    </select>
+
+    <!-- 根据文档ID删除向量 -->
+    <delete id="deleteByDocumentId">
+        DELETE FROM document_vector
+        WHERE document_id = #{documentId}
+    </delete>
+
+    <!-- 向量检索 -->
+    <select id="searchVectors" resultType="com.ridemate.knowledge.entity.DocumentVector">
+        SELECT id, document_id, content, vector, create_time, update_time
+        FROM document_vector
+        ORDER BY vector <-> #{vector}::vector
+        LIMIT #{limit}
+    </select>
+</mapper>

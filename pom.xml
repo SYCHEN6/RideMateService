@@ -43,7 +43,24 @@
             <version>3.0.3</version>
         </dependency>
         
-        <!-- Spring AI暂时移除，后续再添加 -->
+        <!-- Spring AI -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-embedding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-pgvector-store</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-aliyun-qwen-spring-boot-starter</artifactId>
+            <version>${spring-ai-alibaba.version}</version>
+        </dependency>
         
         <!-- Database -->
         <dependency>

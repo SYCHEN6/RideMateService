@@ -2,6 +2,8 @@ package com.ridemate.knowledge.service;
 
 import com.ridemate.knowledge.dto.KnowledgeDocumentResponse;
 import com.ridemate.knowledge.dto.UploadDocumentRequest;
+import com.ridemate.knowledge.dto.ChatRequest;
+import com.ridemate.knowledge.dto.ChatResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -43,4 +45,11 @@ public interface KnowledgeService {
      * @param id 文档ID
      */
     void deleteDocument(Long id);
+
+    /**
+     * 智能问答
+     * @param request 聊天请求
+     * @return 聊天响应
+     */
+    ChatResponse chat(ChatRequest request);
 }

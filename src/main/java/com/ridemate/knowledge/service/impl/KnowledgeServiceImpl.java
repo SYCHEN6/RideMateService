@@ -1,15 +1,20 @@
 package com.ridemate.knowledge.service.impl;
 
+import com.ridemate.knowledge.dto.ChatRequest;
+import com.ridemate.knowledge.dto.ChatResponse;
+import com.ridemate.knowledge.dto.KnowledgeDocumentResponse;
+import com.ridemate.knowledge.dto.UploadDocumentRequest;
 import com.ridemate.knowledge.entity.DocumentImage;
 import com.ridemate.knowledge.entity.DocumentTable;
 import com.ridemate.knowledge.entity.KnowledgeDocument;
-import com.ridemate.knowledge.dto.KnowledgeDocumentResponse;
-import com.ridemate.knowledge.dto.UploadDocumentRequest;
+import com.ridemate.knowledge.entity.DocumentVector;
 import com.ridemate.knowledge.mapper.DocumentImageMapper;
 import com.ridemate.knowledge.mapper.DocumentTableMapper;
 import com.ridemate.knowledge.mapper.KnowledgeDocumentMapper;
 import com.ridemate.knowledge.model.ParsedDocument;
+import com.ridemate.knowledge.service.DocumentParserService;
 import com.ridemate.knowledge.service.KnowledgeService;
+import com.ridemate.knowledge.service.VectorService;
 import com.ridemate.knowledge.service.DocumentParserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +47,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Autowired
     private DocumentParserService documentParserService;
+
+    @Autowired
+    private VectorService vectorService;
 
     @Value("${spring.minio.bucket-name}")
     private String bucketName;
@@ -123,8 +131,87 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             throw new RuntimeException("文档不存在");
         }
 
+        // 删除文档相关的向量
+        vectorService.deleteVectorsByDocumentId(id);
+        
         knowledgeDocumentMapper.deleteById(id);
         logger.info("文档删除成功: ID={}", id);
+    }
+
+    @Override
+    public ChatResponse chat(ChatRequest request) {
+        logger.info("智能问答: 问题={}, 用户ID={}, 会话ID={}", request.getQuestion(), request.getUserId(), request.getSessionId());
+        try {
+            // 1. 向量检索相关文档
+            List<DocumentVector> similarVectors = vectorService.searchSimilarVectors(request.getQuestion(), request.getTopK());
+            logger.info("检索到 {} 个相关文档片段", similarVectors.size());
+
+            // 2. 构建上下文
+            StringBuilder context = new StringBuilder();
+            for (DocumentVector vector : similarVectors) {
+                context.append(vector.getContent()).append("\n\n");
+            }
+
+            // 3. 调用大模型生成回答
+            String answer = generateAnswer(request.getQuestion(), context.toString());
+
+            // 4. 构建响应
+            ChatResponse response = new ChatResponse();
+            response.setQuestion(request.getQuestion());
+            response.setAnswer(answer);
+            response.setSessionId(request.getSessionId() != null ? request.getSessionId() : generateSessionId());
+            response.setTimestamp(java.time.LocalDateTime.now());
+
+            // 5. 添加引用文档
+            List<ChatResponse.ReferenceDocument> references = new ArrayList<>();
+            for (DocumentVector vector : similarVectors) {
+                KnowledgeDocument document = knowledgeDocumentMapper.selectById(vector.getDocumentId());
+                if (document != null) {
+                    ChatResponse.ReferenceDocument ref = new ChatResponse.ReferenceDocument();
+                    ref.setDocumentId(document.getId());
+                    ref.setDocumentTitle(document.getTitle());
+                    ref.setContent(vector.getContent());
+                    // 相似度分数需要根据实际向量计算，这里暂时设为1.0
+                    ref.setSimilarityScore(1.0);
+                    references.add(ref);
+                }
+            }
+            response.setReferences(references);
+
+            logger.info("智能问答完成: 回答长度={}", answer.length());
+            return response;
+        } catch (Exception e) {
+            logger.error("智能问答失败: {}", e.getMessage(), e);
+            throw new RuntimeException("智能问答失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 调用大模型生成回答
+     * @param question 问题
+     * @param context 上下文
+     * @return 回答
+     */
+    private String generateAnswer(String question, String context) {
+        logger.info("调用大模型生成回答: 问题长度={}, 上下文长度={}", question.length(), context.length());
+        
+        // 这里需要集成阿里云通义千问，暂时返回一个示例回答
+        // 实际实现时需要使用Spring AI的ChatClient
+        String prompt = String.format(
+            "基于以下上下文回答用户的问题：\n\n上下文：%s\n\n用户问题：%s\n\n要求：\n1. 仅基于提供的上下文回答\n2. 回答要准确、简洁\n3. 如果上下文没有相关信息，回答'我没有找到相关信息'",
+            context, question
+        );
+        
+        // 暂时返回一个模拟回答
+        return "基于提供的上下文，我的回答是：这是一个示例回答。实际实现时会调用阿里云通义千问生成真实回答。";
+    }
+
+    /**
+     * 生成会话ID
+     * @return 会话ID
+     */
+    private String generateSessionId() {
+        return java.util.UUID.randomUUID().toString();
     }
 
     /**
